@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -6,7 +6,9 @@ import './App.css';
 function App() {
 
   const [moviesList,setMoviesList] = useState([])
-  const [ title, setTitle ] = useState("Fetch Movies")
+  const [title,setTitle] = useState("Fetch Movies")
+  const [loading,setLoading] = useState(false)
+  const [error, setError] = useState(null)
   
   // function fetchMoviesHandler() {
 
@@ -32,9 +34,14 @@ function App() {
    async function fetchMoviesHandler() {
 
     if (moviesList.length === 0) {
-      setTitle("Reset Movie List")
+      setLoading(true)
+      setError(null)
+
+      try {
       const response = await fetch("https://swapi.dev/api/films/")
-        
+       if (!response.ok) {
+          throw new Error("Something Went Wrong!!")
+      }
       const data =  await response.json()
         
       const trasfromData = data.results.map(movieData => {
@@ -47,21 +54,26 @@ function App() {
       })
       setMoviesList(trasfromData);
       setTitle("Reset Movie List")
+      } catch (err) {
+        setError(err.message)
+      }
+      setLoading(false)
+      
     } else {
       setMoviesList([])
       setTitle("Fetch Movies")
     }
-  }
-
+   }
   
   console.log("Movies: ", moviesList)
   return (
     <React.Fragment>
       <section>
-        <button onClick={() => {fetchMoviesHandler();}} >{title}</button>
+        <button onClick={() => {fetchMoviesHandler();}} >{loading ? "Loading" : title}</button>
       </section>
       <section>
-        <MoviesList movies={moviesList} />
+        {moviesList.length === 0 ? <p>Press Button to Display Movie List</p> : <MoviesList movies={moviesList} />}
+        {moviesList.length === 0 && error ? error : null}
       </section>
     </React.Fragment>
   );
