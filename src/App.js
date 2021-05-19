@@ -31,6 +31,7 @@ function App() {
   //   }
   // }
 
+
    async function fetchMoviesHandler() {
 
     if (moviesList.length === 0) {
@@ -72,7 +73,7 @@ function App() {
         <button onClick={() => {fetchMoviesHandler();}} >{loading ? "Loading" : title}</button>
       </section>
       <section>
-        {moviesList.length === 0 ? <p>Press Button to Display Movie List</p> : <MoviesList movies={moviesList} />}
+        {moviesList.length === 0 && !error ? <p>Press Button to Display Movie List</p> : <MoviesList movies={moviesList} />}
         {moviesList.length === 0 && error ? error : null}
       </section>
     </React.Fragment>
